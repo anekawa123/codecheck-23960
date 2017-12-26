@@ -20,8 +20,8 @@ def fill(str, filler='0', size=6):
 
 
 def removeTrailingEquals(str):
-    i = 0
-    while str[-(i+1)] == '=' and i < len(str):
+    i = 1
+    while str[-i] == '=' and i < len(str):
         i += 1
     return str[:-i]
 
@@ -40,14 +40,23 @@ def encode_line(str):
 
 
 def decode_line(str):
+    # print("str", str)
     # remove trailing equals.
     no_equal = removeTrailingEquals(str)
+    # print("no_equal", no_equal)
     # decode per character.
-    # concat 6-digits
+    with open("base64_decode_table.json", "r") as table:
+        base64Dict = json.loads(table.read())
+        mapped = ''.join([base64Dict[ch] for ch in no_equal])
+    # print("mapped", mapped)
     # remove trailing 0s so that len(str) is multiple of 8.
+    cut = mapped[:(len(mapped) // 8) * 8]
+    # print("cut", cut)
     # split in 8-digits and call chr().
+    splited = map(lambda x: chr(int(x, 2)), split(cut, 8))
+    # print("splited", ''.join(splited))
     # return concatenated characters.
-    return 'decoded.'
+    return ''.join(splited)
 
 
 def decode_file(in_file, out_file):
